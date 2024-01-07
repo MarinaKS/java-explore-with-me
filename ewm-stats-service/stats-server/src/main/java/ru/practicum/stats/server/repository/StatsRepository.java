@@ -23,6 +23,6 @@ public interface StatsRepository extends JpaRepository<Stats, Long> {
             "GROUP BY s.app, s.uri ORDER BY COUNT(distinct s.ip) DESC"
     )
     List<ViewStatsRow> getStatsByDateUniqueIp(LocalDateTime start,
-                                           LocalDateTime end,
-                                           List<String> uris);
+                                              LocalDateTime end,
+                                              List<String> uris);
 }

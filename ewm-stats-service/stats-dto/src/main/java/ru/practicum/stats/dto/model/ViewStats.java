@@ -1,6 +1,8 @@
 package ru.practicum.stats.dto.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
 
 @Builder
 @Data

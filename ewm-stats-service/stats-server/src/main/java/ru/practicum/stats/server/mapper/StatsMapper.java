@@ -12,7 +12,8 @@ import java.time.format.DateTimeFormatter;
 @Service
 public class StatsMapper {
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    public static Stats toStats(EndpointHit endpointHit){
+
+    public static Stats toStats(EndpointHit endpointHit) {
         Stats stats = new Stats(
                 null,
                 endpointHit.getApp(),
@@ -22,7 +23,7 @@ public class StatsMapper {
         return stats;
     }
 
-    public static ViewStats toViewStats(ViewStatsRow viewStatsRow){
+    public static ViewStats toViewStats(ViewStatsRow viewStatsRow) {
         ViewStats viewStats = new ViewStats(
                 viewStatsRow.getApp(),
                 viewStatsRow.getUri(),

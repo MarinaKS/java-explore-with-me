@@ -9,7 +9,6 @@ import ru.practicum.stats.dto.model.ViewStats;
 import ru.practicum.stats.server.service.StatsService;
 
 import javax.validation.Valid;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -20,7 +19,7 @@ public class StatsController {
 
     @PostMapping(path = "/hit")
     @ResponseStatus(HttpStatus.CREATED)
-    public void addHit(@Valid @RequestBody EndpointHit endpointHit){
+    public void addHit(@Valid @RequestBody EndpointHit endpointHit) {
         statsService.addHit(endpointHit);
     }
 
@@ -28,7 +27,7 @@ public class StatsController {
     public List<ViewStats> getStats(@RequestParam String start,
                                     @RequestParam String end,
                                     @RequestParam(required = false) List<String> uris,
-                                    @RequestParam(required = false, defaultValue = "false") Boolean unique){
+                                    @RequestParam(required = false, defaultValue = "false") Boolean unique) {
         return statsService.getStats(start, end, uris, unique);
     }
 }

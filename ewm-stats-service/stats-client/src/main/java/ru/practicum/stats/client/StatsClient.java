@@ -13,7 +13,6 @@ import org.springframework.web.client.RestTemplate;
 import ru.practicum.stats.dto.model.EndpointHit;
 import ru.practicum.stats.dto.model.ViewStats;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
