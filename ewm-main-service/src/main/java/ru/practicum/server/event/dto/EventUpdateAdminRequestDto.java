@@ -5,29 +5,23 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.server.event.model.Location;
 
-import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
 @Builder
 @AllArgsConstructor
-public class EventNewDto {
-    @NotNull
-    @Size(min = 3, max = 500)
+public class EventUpdateAdminRequestDto {
+    @Size(min = 1, max = 500)
     private String annotation;
-    @NotNull
     private Long category;
-    @NotNull
-    @Size(min = 20, max = 2000)
+    @Size(min = 1, max = 2000)
     private String description;
-    @NotNull
     private String eventDate;
-    @NotNull
     private Location location;
-    private boolean paid;
-    private int participantLimit;
+    private Boolean paid;
+    private Long participantLimit;
     private Boolean requestModeration;
-    @NotNull
-    @Size(min = 3, max = 120)
+    private AdminStateAction adminStateAction;
+    @Size(min = 1, max = 120)
     private String title;
 }

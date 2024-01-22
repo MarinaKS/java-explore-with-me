@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 @Data
 @Builder
 @AllArgsConstructor
-public class EventUserUpdateRequest {
+public class EventUpdateUserRequestDto {
     @Size(min = 1, max = 500)
     private String annotation;
     private Long category;
@@ -21,7 +21,7 @@ public class EventUserUpdateRequest {
     private Boolean paid;
     private Long participantLimit;
     private Boolean requestModeration;
-    private String stateAction;
+    private UserStateAction userStateAction;
     @Size(min = 1, max = 120)
     private String title;
 }

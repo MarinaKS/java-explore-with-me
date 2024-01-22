@@ -1,4 +1,5 @@
 package ru.practicum.server.event.model;
 
-public class EventState {
+public enum EventState {
+    PENDING, PUBLISHED, CANCELED
 }
