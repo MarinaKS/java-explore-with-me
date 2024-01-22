@@ -18,7 +18,6 @@ public class Event {
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
-    private Long confirmedRequests;
     private String description;
     @Column(name = "event_date")
     private LocalDateTime eventDate;

@@ -10,10 +10,7 @@ import ru.practicum.stats.dto.model.ViewStats;
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,6 +20,9 @@ public class ViewService {
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public Map<Long, Long> getViewsByEvents(List<Event> events) {
+        if (events.isEmpty()) {
+            return new HashMap<>();
+        }
         LocalDateTime minStart = events
                 .stream()
                 .map(Event::getCreatedOn)
@@ -30,13 +30,17 @@ public class ViewService {
                 .get();
         Map<String, Long> eventUris = events
                 .stream()
-                .collect(Collectors.toMap(e -> "/events/" + e.getId(), e -> e.getId()));
+                .collect(Collectors.toMap(e -> "/events/" + e.getId(), e -> e.getId(), (e1, e2) -> e2));
         List<ViewStats> stats = statsClient.getStats(
                 minStart.format(dateTimeFormatter),
                 LocalDateTime.now().format(dateTimeFormatter),
                 new ArrayList<>(eventUris.keySet()),
                 false);
-        return stats.stream().collect(Collectors.toMap(s -> eventUris.get(s.getUri()), s -> s.getHits()));
+        Map<String, Long> viewsByUris = stats.stream().collect(Collectors.toMap(ViewStats::getUri, ViewStats::getHits));
+        return events.stream()
+                .collect(Collectors.toMap(Event::getId,
+                        e -> viewsByUris.getOrDefault("/events/" + e.getId(), 0L),
+                        (e1, e2) -> e2));
     }
 
     public void sendHit(HttpServletRequest request) {

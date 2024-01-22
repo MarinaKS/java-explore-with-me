@@ -146,7 +146,11 @@ public class RequestServiceImpl implements RequestService {
     public Map<Long, Long> getConfirmedRequestCountsByEventsIds(List<Event> events) {
         List<Long> eventIds = events.stream().map(Event::getId).collect(Collectors.toList());
         List<ConfirmedRequestsByEventIdRow> counts = requestRepository.countConfirmedRequestByEventIds(eventIds);
-        return counts.stream().collect(Collectors.toMap(ConfirmedRequestsByEventIdRow::getEventId,
-                ConfirmedRequestsByEventIdRow::getConfirmedRequests));
+        Map<Long, Long> confirmedRequestsByEventId = counts.stream()
+                .collect(Collectors.toMap(ConfirmedRequestsByEventIdRow::getEventId,
+                        ConfirmedRequestsByEventIdRow::getConfirmedRequests));
+        return events.stream().collect(Collectors.toMap(Event::getId,
+                e -> confirmedRequestsByEventId.getOrDefault(e.getId(), 0L),
+                (e1, e2) -> e2));
     }
 }

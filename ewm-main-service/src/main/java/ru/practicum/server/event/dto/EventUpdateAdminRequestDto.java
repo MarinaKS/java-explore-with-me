@@ -21,7 +21,7 @@ public class EventUpdateAdminRequestDto {
     private Boolean paid;
     private Long participantLimit;
     private Boolean requestModeration;
-    private AdminStateAction adminStateAction;
+    private AdminStateAction stateAction;
     @Size(min = 1, max = 120)
     private String title;
 }

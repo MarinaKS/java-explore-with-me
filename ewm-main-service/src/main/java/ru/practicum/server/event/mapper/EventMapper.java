@@ -37,14 +37,6 @@ public class EventMapper {
                 .build();
     }
 
-    public static EventFullDto toEventFullDto(Event event, Long views) {
-        return toEventFullDto(event, views, null);
-    }
-
-    public static EventFullDto toEventFullDto(Event event) {
-        return toEventFullDto(event, null, null);
-    }
-
     public static Event toEvent(EventNewDto eventNewDto, Category category, User initiator) {
         Event event = new Event();
         event.setAnnotation(eventNewDto.getAnnotation());
@@ -57,7 +49,7 @@ public class EventMapper {
         event.setTitle(eventNewDto.getTitle());
         event.setInitiator(initiator);
         event.setCreatedOn(LocalDateTime.now());
-        event.setConfirmedRequests(0L);
+        event.setRequestModeration(eventNewDto.getRequestModeration());
         event.setEventState(EventState.PENDING);
         return event;
     }

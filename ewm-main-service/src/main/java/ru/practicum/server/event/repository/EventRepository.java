@@ -19,14 +19,16 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Optional<Event> findByIdAndInitiatorId(Long eventId, Long userId);
 
     @Query("select e from Event e " +
-            "where (:query is null or e.annotation like lower(concat('%', :query, '%')) or e.description like lower(concat('%', :query, '%'))) " +
-            "and (:states is null or e.eventState in (:states)) " +
-            "and (:categories is null or e.category.id in (:categories)) " +
+            "where (:query is null or lower(e.annotation) like lower(concat('%', :query, '%')) or lower(e.description) like lower(concat('%', :query, '%'))) " +
+            "and ((:states) is null or e.eventState in (:states)) " +
+            "and ((:categories) is null or e.category.id in (:categories)) " +
             "and (:paid is null or e.paid = :paid) " +
-            "and (CAST(:rangeStart AS date) is null or e.eventDate >= :rangeStart) " +
-            "and (CAST(:rangeEnd AS date) is null or e.eventDate <= :rangeEnd) " +
-            "and (:onlyAvailable = false or (e.confirmedRequests < e.participantLimit or e.participantLimit = 0)) " +
-            "order by e.eventDate")
+            "and (CAST(:rangeStart AS timestamp) is null or e.eventDate >= :rangeStart) " +
+            "and (CAST(:rangeEnd AS timestamp) is null or e.eventDate <= :rangeEnd) " +
+            "and (:onlyAvailable = false or " +
+            "(select count(r) from Request r where r.event.id = e.id and r.status = ru.practicum.server.request.model.RequestStatus.CONFIRMED) < e.participantLimit " +
+            "or e.participantLimit = 0) " +
+            "order by e.eventDate desc")
     List<Event> findByParamsOrderByDate(String query,
                                         List<EventState> states,
                                         List<Long> categories,
@@ -37,12 +39,12 @@ public interface EventRepository extends JpaRepository<Event, Long> {
                                         PageRequest pageable);
 
     @Query("select e from Event e " +
-            "where (:userIds is null or e.initiator.id in (:userIds)) " +
-            "and (:states is null or e.eventState in (:states)) " +
-            "and (:categoryIds is null or e.category.id in (:categoryIds)) " +
-            "and (:rangeStart is null or e.eventDate >= :rangeStart) " +
-            "and (:rangeEnd is null or e.eventDate <= :rangeEnd) " +
-            "order by e.eventDate")
+            "where ((:userIds) is null or e.initiator.id in (:userIds)) " +
+            "and ((:states) is null or e.eventState in (:states)) " +
+            "and ((:categoryIds) is null or e.category.id in (:categoryIds)) " +
+            "and (CAST(:rangeStart as timestamp) is null or e.eventDate >= :rangeStart) " +
+            "and (CAST(:rangeEnd as timestamp) is null or e.eventDate <= :rangeEnd) " +
+            "order by e.eventDate desc")
     List<Event> findEventsByAdmin(List<Long> userIds,
                                   List<EventState> states,
                                   List<Long> categoryIds,
