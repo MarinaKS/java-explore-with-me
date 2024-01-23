@@ -9,6 +9,7 @@ import ru.practicum.server.event.model.EventState;
 import ru.practicum.server.event.repository.EventRepository;
 import ru.practicum.server.exception.ConflictException;
 import ru.practicum.server.exception.ObjectNotFoundException;
+import ru.practicum.server.exception.ValidationException;
 import ru.practicum.server.request.dto.RequestEventStatusUpdateRequest;
 import ru.practicum.server.request.dto.RequestEventStatusUpdateResult;
 import ru.practicum.server.request.dto.RequestParticipationDto;
@@ -95,7 +96,7 @@ public class RequestServiceImpl implements RequestService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ObjectNotFoundException("Событие не найдено"));
         if (!event.getInitiator().getId().equals(userId)) {
-            throw new IllegalArgumentException("Рассматривать заявки может только создатель события");
+            throw new ValidationException("Рассматривать заявки может только создатель события");
         }
         if (!event.getRequestModeration() || event.getParticipantLimit() == 0) {
             throw new ConflictException("Подтверждение заявки не требуется");

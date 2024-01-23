@@ -3,6 +3,7 @@ package ru.practicum.server.event.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 import ru.practicum.server.event.model.Location;
 
 import javax.validation.constraints.NotNull;
@@ -13,12 +14,12 @@ import javax.validation.constraints.Size;
 @AllArgsConstructor
 public class EventNewDto {
     @NotNull
-    @Size(min = 3, max = 500)
+    @Size(min = 20, max = 2000)
     private String annotation;
     @NotNull
     private Long category;
     @NotNull
-    @Size(min = 20, max = 2000)
+    @Size(min = 20, max = 7000)
     private String description;
     @NotNull
     private String eventDate;

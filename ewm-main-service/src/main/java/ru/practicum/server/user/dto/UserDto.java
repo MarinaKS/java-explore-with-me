@@ -16,10 +16,10 @@ public class UserDto {
     private Long id;
     @NotBlank
     @NotNull
-    @Length(min = 6, max = 254)
+    @Length(min = 2, max = 250)
     private String name;
     @NotNull
     @Email
-    @Length(min = 2, max = 250)
+    @Length(min = 6, max = 254)
     private String email;
 }

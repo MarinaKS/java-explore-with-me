@@ -14,6 +14,7 @@ import ru.practicum.server.event.model.EventState;
 import ru.practicum.server.event.repository.EventRepository;
 import ru.practicum.server.exception.ConflictException;
 import ru.practicum.server.exception.ObjectNotFoundException;
+import ru.practicum.server.exception.ValidationException;
 import ru.practicum.server.request.repository.RequestRepository;
 import ru.practicum.server.request.service.RequestService;
 import ru.practicum.server.user.model.User;
@@ -137,7 +138,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public EventFullDto addEvent(Long userId, EventNewDto eventNewDto) {
         if (LocalDateTime.now().plusHours(2).isAfter(LocalDateTime.parse(eventNewDto.getEventDate(), dateTimeFormatter))) {
-            throw new IllegalArgumentException("Старт события должен быть не раньше, чем через 2 часа");
+            throw new ValidationException("Старт события должен быть не раньше, чем через 2 часа");
         }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ObjectNotFoundException("Пользователь с таким d не найден"));
@@ -282,7 +283,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Такой ивент не найден"));
         if (event.getEventState() != EventState.PUBLISHED) {
-            throw new IllegalStateException("Событие должно быть опубликовано");
+            throw new ValidationException("Событие должно быть опубликовано");
         }
         viewService.sendHit(request);
 
