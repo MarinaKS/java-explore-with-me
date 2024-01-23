@@ -57,7 +57,7 @@ public class CompilationServiceImpl implements CompilationService {
         List<Event> events = eventRepository.findAllByIdIn(compilationNewDto.getEvents());
         Compilation compilation = new Compilation();
         compilation.setEvents(events);
-        compilation.setPinned(compilationNewDto.getPinned());
+        compilation.setPinned(compilationNewDto.isPinned());
         compilation.setTitle(compilationNewDto.getTitle());
         Compilation savedCompilation = compilationRepository.save(compilation);
         return CompilationMapper.toCompilationDto(

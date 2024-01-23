@@ -49,7 +49,7 @@ public class EventMapper {
         event.setTitle(eventNewDto.getTitle());
         event.setInitiator(initiator);
         event.setCreatedOn(LocalDateTime.now());
-        event.setRequestModeration(eventNewDto.getRequestModeration());
+        event.setRequestModeration(eventNewDto.isRequestModeration());
         event.setEventState(EventState.PENDING);
         return event;
     }
