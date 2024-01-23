@@ -7,7 +7,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.server.exception.ConflictException;
-import ru.practicum.server.exception.ValidationException;
 import ru.practicum.server.user.dto.UserDto;
 import ru.practicum.server.user.mapper.UserMapper;
 import ru.practicum.server.user.model.User;

@@ -12,7 +12,6 @@ import ru.practicum.server.category.repository.CategoryRepository;
 import ru.practicum.server.event.repository.EventRepository;
 import ru.practicum.server.exception.ConflictException;
 import ru.practicum.server.exception.ObjectNotFoundException;
-import ru.practicum.server.exception.ValidationException;
 
 import java.util.List;
 import java.util.stream.Collectors;
