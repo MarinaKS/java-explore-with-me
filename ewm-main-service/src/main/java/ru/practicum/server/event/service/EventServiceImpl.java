@@ -145,6 +145,7 @@ public class EventServiceImpl implements EventService {
         Category category = categoryRepository.findById(eventNewDto.getCategory())
                 .orElseThrow(() -> new ObjectNotFoundException("Такая категория не найдена"));
         Event event = EventMapper.toEvent(eventNewDto, category, user);
+        event = eventRepository.save(event);
         Long views = viewService.getViewsByEvents(List.of(event)).get(event.getId());
         Long confirmedRequest = requestService.getConfirmedRequestCountsByEventsIds(List.of(event)).get(event.getId());
 

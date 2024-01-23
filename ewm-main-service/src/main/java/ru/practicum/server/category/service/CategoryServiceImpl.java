@@ -10,6 +10,7 @@ import ru.practicum.server.category.mapper.CategoryMapper;
 import ru.practicum.server.category.model.Category;
 import ru.practicum.server.category.repository.CategoryRepository;
 import ru.practicum.server.event.repository.EventRepository;
+import ru.practicum.server.exception.ConflictException;
 import ru.practicum.server.exception.ObjectNotFoundException;
 import ru.practicum.server.exception.ValidationException;
 
@@ -26,7 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public CategoryDto addCategory(CategoryDto categoryDto) {
         if (categoryRepository.existsByName(categoryDto.getName())) {
-            throw new ValidationException("Такое название категории уже существует");
+            throw new ConflictException("Такое название категории уже существует");
         }
         return CategoryMapper.toCategoryDto(categoryRepository.save(CategoryMapper.toCategory(categoryDto)));
     }
@@ -35,7 +36,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public void deleteCategory(Long catId) {
         if (eventRepository.existsByCategoryId(catId)) {
-            throw new ValidationException("Категория не пуста");
+            throw new ConflictException("Категория не пуста");
         }
         categoryRepository.deleteById(catId);
     }
@@ -46,7 +47,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new ObjectNotFoundException("Нет категории с таким id"));
         if (categoryRepository.existsByName(categoryDto.getName())) {
-            throw new ValidationException("Имя категории уже занято");
+            throw new ConflictException("Имя категории уже занято");
         }
         category.setName(categoryDto.getName());
         return CategoryMapper.toCategoryDto(categoryRepository.save(category));

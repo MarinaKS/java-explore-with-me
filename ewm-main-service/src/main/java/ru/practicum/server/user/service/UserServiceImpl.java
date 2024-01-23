@@ -6,6 +6,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.server.exception.ConflictException;
 import ru.practicum.server.exception.ValidationException;
 import ru.practicum.server.user.dto.UserDto;
 import ru.practicum.server.user.mapper.UserMapper;
@@ -26,7 +27,7 @@ public class UserServiceImpl implements UserService {
     public UserDto addUser(UserDto userDto) {
         if (userRepository.existsByEmail(userDto.getEmail())) {
             log.info("Емейл уже используется: {}", userDto.getEmail());
-            throw new ValidationException("Пользователь с таким емейл уже есть");
+            throw new ConflictException("Пользователь с таким емейл уже есть");
         }
         User user = userRepository.save(UserMapper.toUser(userDto));
         log.info("Добавлен пользователь с id {}", user.getId());

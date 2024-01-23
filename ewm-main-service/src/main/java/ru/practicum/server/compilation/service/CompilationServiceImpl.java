@@ -62,8 +62,8 @@ public class CompilationServiceImpl implements CompilationService {
         Compilation savedCompilation = compilationRepository.save(compilation);
         return CompilationMapper.toCompilationDto(
                 savedCompilation,
-                viewService.getViewsByEvents(compilation.getEvents()),
-                requestService.getConfirmedRequestCountsByEventsIds(compilation.getEvents()));
+                viewService.getViewsByEvents(savedCompilation.getEvents()),
+                requestService.getConfirmedRequestCountsByEventsIds(savedCompilation.getEvents()));
     }
 
     @Override
