@@ -3,7 +3,6 @@ package ru.practicum.server.event.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.hibernate.validator.constraints.Length;
 import ru.practicum.server.event.model.Location;
 
 import javax.validation.constraints.NotNull;
