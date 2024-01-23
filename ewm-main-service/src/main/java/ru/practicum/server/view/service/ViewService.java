@@ -35,7 +35,7 @@ public class ViewService {
                 minStart.format(dateTimeFormatter),
                 LocalDateTime.now().format(dateTimeFormatter),
                 new ArrayList<>(eventUris.keySet()),
-                false);
+                true);
         Map<String, Long> viewsByUris = stats.stream().collect(Collectors.toMap(ViewStats::getUri, ViewStats::getHits));
         return events.stream()
                 .collect(Collectors.toMap(Event::getId,

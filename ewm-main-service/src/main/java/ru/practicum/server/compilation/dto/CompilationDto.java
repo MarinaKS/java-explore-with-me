@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import ru.practicum.server.event.dto.EventShortDto;
 
+import javax.validation.constraints.Size;
 import java.util.List;
 
 @Data
@@ -12,7 +13,8 @@ import java.util.List;
 @AllArgsConstructor
 public class CompilationDto {
     private Long id;
-    private Boolean pinned;
+    private boolean pinned;
+    @Size(max = 50)
     private String title;
     private List<EventShortDto> events;
 }

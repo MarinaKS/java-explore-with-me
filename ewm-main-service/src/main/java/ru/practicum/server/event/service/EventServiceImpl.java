@@ -79,7 +79,7 @@ public class EventServiceImpl implements EventService {
         if (eventUpdateAdminRequestDto.getEventDate() != null) {
             if (LocalDateTime.parse(eventUpdateAdminRequestDto.getEventDate(),
                     dateTimeFormatter).isBefore(LocalDateTime.now().plusHours(1))) {
-                throw new ConflictException("Lата начала изменяемого события должна быть не ранее чем за час от даты публикации.");
+                throw new ValidationException("Lата начала изменяемого события должна быть не ранее чем за час от даты публикации.");
             } else {
                 event.setEventDate(LocalDateTime.parse(eventUpdateAdminRequestDto.getEventDate(),
                         dateTimeFormatter));
@@ -186,7 +186,7 @@ public class EventServiceImpl implements EventService {
         if (eventUpdateUserRequestDto.getEventDate() != null) {
             if (LocalDateTime.parse(eventUpdateUserRequestDto.getEventDate(),
                     dateTimeFormatter).isBefore(LocalDateTime.now().plusHours(2))) {
-                throw new ConflictException("Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента");
+                throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, чем через два часа от текущего момента");
             } else {
                 event.setEventDate(LocalDateTime.parse(eventUpdateUserRequestDto.getEventDate(),
                         dateTimeFormatter));
@@ -253,6 +253,9 @@ public class EventServiceImpl implements EventService {
         if (rangeEnd != null) {
             end = LocalDateTime.parse(rangeEnd, dateTimeFormatter);
         }
+        if (start.isAfter(end)) {
+            throw new ValidationException("Начало позже конца временного промежутка");
+        }
         if (text == null) text = "";
         viewService.sendHit(request);
         List<Event> eventsPage;
@@ -284,13 +287,11 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Такой ивент не найден"));
         if (event.getEventState() != EventState.PUBLISHED) {
-            throw new ValidationException("Событие должно быть опубликовано");
+            throw new ObjectNotFoundException("Событие должно быть опубликовано");
         }
-        viewService.sendHit(request);
-
         Long confirmedRequests = requestRepository.countConfirmedRequestByEventId(event.getId());
-
         Long views = viewService.getViewsByEvents(List.of(event)).get(id);
+        viewService.sendHit(request);
         return EventMapper.toEventFullDto(event, views, confirmedRequests);
     }
 

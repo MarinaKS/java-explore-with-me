@@ -45,7 +45,7 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDto updateCategory(Long catId, CategoryDto categoryDto) {
         Category category = categoryRepository.findById(catId)
                 .orElseThrow(() -> new ObjectNotFoundException("Нет категории с таким id"));
-        if (categoryRepository.existsByName(categoryDto.getName())) {
+        if (categoryRepository.existsByNameAndIdNot(categoryDto.getName(), catId)) {
             throw new ConflictException("Имя категории уже занято");
         }
         category.setName(categoryDto.getName());
