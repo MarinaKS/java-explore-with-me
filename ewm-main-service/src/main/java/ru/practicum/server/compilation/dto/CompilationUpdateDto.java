@@ -11,9 +11,8 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 public class CompilationUpdateDto {
-    private List<Long> events = new ArrayList<>();
+    private List<Long> events;
     private Boolean pinned;
-    @NotBlank
     @Size(max = 50)
     private String title;
 }
