@@ -245,6 +245,7 @@ public class EventServiceImpl implements EventService {
                                         Integer from,
                                         Integer size,
                                         HttpServletRequest request) {
+        List<Event> eventsPage = new ArrayList<>();
         try {
             LocalDateTime start = LocalDateTime.now();
             LocalDateTime end = LocalDateTime.parse(RANGE_END, dateTimeFormatter);
@@ -258,7 +259,6 @@ public class EventServiceImpl implements EventService {
                 throw new ValidationException("Начало позже конца временного промежутка");
             }
             if (text == null) text = "";
-            List<Event> eventsPage;
             Map<Long, Long> views;
             if (sort == null || sort.equals(SortValue.EVENT_DATE)) {
                 PageRequest pageable = PageRequest.of(from / size, size);
@@ -281,6 +281,7 @@ public class EventServiceImpl implements EventService {
                     .map(e -> EventMapper.toEventFullDto(e, views.get(e.getId()), confirmedRequests.get(e.getId())))
                     .collect(Collectors.toList());
         } finally {
+            eventsPage.forEach(e -> viewService.sendHit(request, "/events/" + e.getId()));
             viewService.sendHit(request);
         }
     }
