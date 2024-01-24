@@ -31,7 +31,7 @@ public interface RequestRepository extends JpaRepository<Request, Long> {
     Long countConfirmedRequestByEventId(Long eventId);
 
     @Query("SELECT new ru.practicum.server.request.repository.ConfirmedRequestsByEventIdRow(r.id, COUNT(r.id)) " +
-            "FROM Request r where r.id in (:eventIds) and r.status = ru.practicum.server.request.model.RequestStatus.CONFIRMED " +
+            "FROM Request r where r.event.id in (:eventIds) and r.status = ru.practicum.server.request.model.RequestStatus.CONFIRMED " +
             "GROUP BY r.id")
     List<ConfirmedRequestsByEventIdRow> countConfirmedRequestByEventIds(List<Long> eventIds);
 
