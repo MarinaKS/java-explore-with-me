@@ -245,55 +245,60 @@ public class EventServiceImpl implements EventService {
                                         Integer from,
                                         Integer size,
                                         HttpServletRequest request) {
-        LocalDateTime start = LocalDateTime.now();
-        LocalDateTime end = LocalDateTime.parse(RANGE_END, dateTimeFormatter);
-        if (rangeStart != null) {
-            start = LocalDateTime.parse(rangeStart, dateTimeFormatter);
-        }
-        if (rangeEnd != null) {
-            end = LocalDateTime.parse(rangeEnd, dateTimeFormatter);
-        }
-        if (start.isAfter(end)) {
-            throw new ValidationException("Начало позже конца временного промежутка");
-        }
-        if (text == null) text = "";
-        List<Event> eventsPage;
-        Map<Long, Long> views;
-        if (sort == null || sort.equals(SortValue.EVENT_DATE)) {
-            PageRequest pageable = PageRequest.of(from / size, size);
-            eventsPage = eventRepository.findByParamsOrderByDate(text.toLowerCase(), List.of(EventState.PUBLISHED),
-                    categories, paid, start, end, onlyAvailable, pageable);
-            views = viewService.getViewsByEvents(eventsPage);
-        } else {
-            PageRequest pageable = PageRequest.of(0, Integer.MAX_VALUE);
-            List<Event> eventsAll = eventRepository.findByParamsOrderByDate(text.toLowerCase(), List.of(EventState.PUBLISHED),
-                    categories, paid, start, end, onlyAvailable, pageable);
-            Map<Long, Event> eventsAllById = eventsAll.stream().collect(Collectors.toMap(Event::getId, Function.identity()));
-            views = viewService.getViewsByEvents(eventsAll);
-            eventsPage = views.entrySet().stream()
-                    .sorted(Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder()))
-                    .skip(from).limit(size).map(e -> eventsAllById.get(e.getKey())).collect(Collectors.toList());
-        }
-        Map<Long, Long> confirmedRequests = requestService.getConfirmedRequestCountsByEventsIds(eventsPage);
+        try {
+            LocalDateTime start = LocalDateTime.now();
+            LocalDateTime end = LocalDateTime.parse(RANGE_END, dateTimeFormatter);
+            if (rangeStart != null) {
+                start = LocalDateTime.parse(rangeStart, dateTimeFormatter);
+            }
+            if (rangeEnd != null) {
+                end = LocalDateTime.parse(rangeEnd, dateTimeFormatter);
+            }
+            if (start.isAfter(end)) {
+                throw new ValidationException("Начало позже конца временного промежутка");
+            }
+            if (text == null) text = "";
+            List<Event> eventsPage;
+            Map<Long, Long> views;
+            if (sort == null || sort.equals(SortValue.EVENT_DATE)) {
+                PageRequest pageable = PageRequest.of(from / size, size);
+                eventsPage = eventRepository.findByParamsOrderByDate(text.toLowerCase(), List.of(EventState.PUBLISHED),
+                        categories, paid, start, end, onlyAvailable, pageable);
+                views = viewService.getViewsByEvents(eventsPage);
+            } else {
+                PageRequest pageable = PageRequest.of(0, Integer.MAX_VALUE);
+                List<Event> eventsAll = eventRepository.findByParamsOrderByDate(text.toLowerCase(), List.of(EventState.PUBLISHED),
+                        categories, paid, start, end, onlyAvailable, pageable);
+                Map<Long, Event> eventsAllById = eventsAll.stream().collect(Collectors.toMap(Event::getId, Function.identity()));
+                views = viewService.getViewsByEvents(eventsAll);
+                eventsPage = views.entrySet().stream()
+                        .sorted(Comparator.comparing(Map.Entry::getValue, Comparator.reverseOrder()))
+                        .skip(from).limit(size).map(e -> eventsAllById.get(e.getKey())).collect(Collectors.toList());
+            }
+            Map<Long, Long> confirmedRequests = requestService.getConfirmedRequestCountsByEventsIds(eventsPage);
 
-        viewService.sendHit(request);
-        eventsPage.forEach(e -> viewService.sendHit(request, "/events/" + e.getId()));
-        return eventsPage.stream()
-                .map(e -> EventMapper.toEventFullDto(e, views.get(e.getId()), confirmedRequests.get(e.getId())))
-                .collect(Collectors.toList());
+            return eventsPage.stream()
+                    .map(e -> EventMapper.toEventFullDto(e, views.get(e.getId()), confirmedRequests.get(e.getId())))
+                    .collect(Collectors.toList());
+        } finally {
+            viewService.sendHit(request);
+        }
     }
 
     @Override
     public EventFullDto getEvent(Long id, HttpServletRequest request) {
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Такой ивент не найден"));
-        if (event.getEventState() != EventState.PUBLISHED) {
-            throw new ObjectNotFoundException("Событие должно быть опубликовано");
+        try {
+            Event event = eventRepository.findById(id)
+                    .orElseThrow(() -> new ObjectNotFoundException("Такой ивент не найден"));
+            if (event.getEventState() != EventState.PUBLISHED) {
+                throw new ObjectNotFoundException("Событие должно быть опубликовано");
+            }
+            Long confirmedRequests = requestRepository.countConfirmedRequestByEventId(event.getId());
+            Long views = viewService.getViewsByEvents(List.of(event)).get(id);
+            return EventMapper.toEventFullDto(event, views, confirmedRequests);
+        } finally {
+            viewService.sendHit(request);
         }
-        Long confirmedRequests = requestRepository.countConfirmedRequestByEventId(event.getId());
-        Long views = viewService.getViewsByEvents(List.of(event)).get(id);
-        viewService.sendHit(request);
-        return EventMapper.toEventFullDto(event, views, confirmedRequests);
     }
 
 }
