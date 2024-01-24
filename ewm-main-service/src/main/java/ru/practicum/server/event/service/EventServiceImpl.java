@@ -257,7 +257,6 @@ public class EventServiceImpl implements EventService {
             throw new ValidationException("Начало позже конца временного промежутка");
         }
         if (text == null) text = "";
-        viewService.sendHit(request);
         List<Event> eventsPage;
         Map<Long, Long> views;
         if (sort == null || sort.equals(SortValue.EVENT_DATE)) {
@@ -277,6 +276,8 @@ public class EventServiceImpl implements EventService {
         }
         Map<Long, Long> confirmedRequests = requestService.getConfirmedRequestCountsByEventsIds(eventsPage);
 
+        viewService.sendHit(request);
+        eventsPage.forEach(e -> viewService.sendHit(request, "/events/" + e.getId()));
         return eventsPage.stream()
                 .map(e -> EventMapper.toEventFullDto(e, views.get(e.getId()), confirmedRequests.get(e.getId())))
                 .collect(Collectors.toList());

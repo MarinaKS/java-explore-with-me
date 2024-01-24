@@ -52,4 +52,14 @@ public class ViewService {
                 remoteAddr,
                 LocalDateTime.now().format(dateTimeFormatter)));
     }
+
+    public void sendHit(HttpServletRequest request, String uri) {
+        String nameService = "ewm-main-service";
+        String remoteAddr = request.getRemoteAddr();
+        statsClient.addStats(new EndpointHit(
+                nameService,
+                uri,
+                remoteAddr,
+                LocalDateTime.now().format(dateTimeFormatter)));
+    }
 }
