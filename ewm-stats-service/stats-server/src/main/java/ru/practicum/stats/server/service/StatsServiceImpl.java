@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.stats.dto.model.EndpointHit;
 import ru.practicum.stats.dto.model.ViewStats;
+import ru.practicum.stats.server.exception.ValidationException;
 import ru.practicum.stats.server.mapper.StatsMapper;
 import ru.practicum.stats.server.model.Stats;
 import ru.practicum.stats.server.repository.StatsRepository;
@@ -33,7 +34,7 @@ public class StatsServiceImpl implements StatsService {
         LocalDateTime startParsed = LocalDateTime.parse(start, FORMATTER);
         LocalDateTime endParsed = LocalDateTime.parse(end, FORMATTER);
         if (startParsed.isAfter(endParsed)) {
-            throw new IllegalArgumentException("start cannot be after end");
+            throw new ValidationException("start cannot be after end");
         }
         log.info("viewStats: start = {}, end = {}, uris = {}, unique = {}",
                 start, end, uris, unique);
